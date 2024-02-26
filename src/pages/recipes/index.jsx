@@ -1,8 +1,31 @@
-import { Card, CardContent, CardMedia, Container, Grid, TextField, Typography } from "@mui/material";
+import { Container, Grid, TextField } from "@mui/material";
+import RecipeItem from "../../components/recipe-item";
+import { useEffect, useState } from "react";
 
 export default function Recipes() {
+    const [recipes, setRecipes] = useState([]);
+
+    const searchRecipes = () => {
+        // prepare url
+        const url = new URL('https://api.spoonacular.com/recipes/complexSearch');
+        url.searchParams.append('apiKey', '9a1ff3f86bc943b59a4a406c55c3dbde');
+        // fetch recipes
+        fetch(url)
+            .then((response) => response.json())
+            .then((data) => {
+                // update the recipes state
+                setRecipes(data.results);
+                // console.log(data);
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+    }
+
+    useEffect(searchRecipes, []);
+
     return (
-        <Container sx={{ my: '2rem' }} maxWidth="sm">
+        <Container sx={{ my: '2rem' }}>
             <TextField
                 fullWidth
                 id="outlined-basic"
@@ -10,16 +33,7 @@ export default function Recipes() {
                 variant="outlined" />
 
             <Grid sx={{ mt: '1rem' }} container spacing={3}>
-                <Grid item xs={4}>
-                    <Card>
-                        <CardMedia
-                            sx={{ height: 140 }}
-                            image="https://plus.unsplash.com/premium_photo-1683910767532-3a25b821f7ae?q=80&w=1108&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />
-                    </Card>
-                    <CardContent>
-                        <Typography variant="h5">Recipe Name</Typography>
-                    </CardContent>
-                </Grid>
+                {recipes.map((recipe) => <RecipeItem key={recipe.id} title={recipe.title} image={recipe.image} />)}
             </Grid>
         </Container>
     );
