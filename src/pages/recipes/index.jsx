@@ -4,13 +4,15 @@ import { useEffect, useState } from "react";
 import emptyIcon from "../../assets/images/undraw_page_not_found_re_e9o6.svg";
 import loadingIcon from "../../assets/images/infinite-spinner.svg";
 import Navbar from "../../components/navbar";
+import { useNavigate } from "react-router-dom";
 
 export default function Recipes() {
+    const navigate = useNavigate();
     const [recipes, setRecipes] = useState([]);
-    const [keyword, setKeyword] = useState("");
+    const [keyword, setKeyword] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const getRecipes = () => {
+    const getRecipes = async () => {
         setLoading(true);
         // prepare url
         // const url = new URL('https://api.spoonacular.com/recipes/complexSearch');
@@ -18,21 +20,22 @@ export default function Recipes() {
         // url.searchParams.append('apiKey', process.env.REACT_APP_SPOONACULAR_API_KEY);
         // url.searchParams.append('query', keyword);
         // fetch recipes
-        fetch(url)
-            .then((response) => response.json())
-            .then((data) => {
-                // update the recipes state
-                // setRecipes(data.results);
-                setRecipes(data);
-                // console.log(data);
-            })
-            .catch((error) => {
-                console.log(error);
-            })
-            .finally(() => setLoading(false))
+        const response = await fetch(url, { credentials: 'include' });
+        if (response.status === 401) {
+            navigate('/login');
+        } else {
+            const data = await response.json();
+            // update the recipes state
+            // setRecipes(data.results);
+            setRecipes(data);
+            // console.log(data);
+            setLoading(false)
+        }
     }
 
-    useEffect(getRecipes, [keyword]);
+    useEffect(() => {
+        getRecipes()
+    }, [keyword]);
 
     return (
         <>

@@ -23,8 +23,8 @@ export default function Recipe() {
             {isLoading ? <img src={loadingIcon} alt="loadingIcon" /> : (
                 <Container>
                     <h1>{data.title}</h1>
-                    <div dangerouslySetInnerHTML={{ __html: data.summary }} />
-                    <img src={data.image} alt={data.title} />
+                    <p>{data.description}</p>
+                    <img width="100%" src={`https://minio-dev.azurewebsites.net/recipe-api/images/${data.image}`} alt={data.title} />
                 </Container>
             )}
         </>

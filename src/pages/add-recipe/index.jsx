@@ -1,8 +1,8 @@
-import { Alert, Box, Collapse, Container, IconButton, MenuItem, TextField } from "@mui/material";
-import { Close } from "@mui/icons-material";
+import { Box, Container, MenuItem, TextField } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { useState } from "react";
 import Navbar from "../../components/navbar";
+import { useNavigate } from "react-router-dom";
 
 export const countries = [
     { value: 'GH', label: 'Ghana' },
@@ -12,18 +12,29 @@ export const countries = [
 ];
 
 export default function AddRecipe() {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [open, setOpen] = useState(false);
-    const [message, setMessage] = useState('New Recipe Added Successfully!');
 
     const addRecipe = async (event) => {
         // Set loading to true
+        setLoading(true);
         // Prevent default form submit behavior
+        event.preventDefault();
         // Get form data
+        const formData = new FormData(event.target);
         // Post form data to the backend
-        // Update message based on response status
-        // Open collapsible Alert
-        // Set loading to false
+        const response = await fetch(`${process.env.REACT_APP_RECIPE_API_URL}/recipes`, {
+            credentials: 'include',
+            method: 'POST',
+            body: formData
+        });
+        // Navigate to /recipes if add recipe was successful
+        if (response.status === 201) {
+            navigate('/recipes');
+        } else {
+            // Set loading to false
+            setLoading(false);
+        }
     }
 
     return (
@@ -31,7 +42,7 @@ export default function AddRecipe() {
             <Navbar />
             <Container sx={{ my: '2rem' }} maxWidth="sm">
                 <h1>Add A New Recipe</h1>
-                <form>
+                <form onSubmit={addRecipe}>
                     <TextField
                         sx={{ mb: '2rem' }}
                         fullWidth
@@ -68,24 +79,6 @@ export default function AddRecipe() {
                         ))}
                     </TextField>
                     <Box textAlign="center">
-                        <Collapse in={open}>
-                            <Alert
-                                action={
-                                    <IconButton
-                                        aria-label="close"
-                                        color="inherit"
-                                        size="small"
-                                        onClick={() => {
-                                            setOpen(false);
-                                        }}
-                                    >
-                                        <Close fontSize="inherit" />
-                                    </IconButton>
-                                }
-                                sx={{ mb: 2 }}
-                            >{message}</Alert>
-                        </Collapse>
-
                         <LoadingButton
                             sx={{ width: '50%' }}
                             loading={loading}
