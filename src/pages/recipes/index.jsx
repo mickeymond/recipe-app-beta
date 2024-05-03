@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import emptyIcon from "../../assets/images/undraw_page_not_found_re_e9o6.svg";
 import loadingIcon from "../../assets/images/infinite-spinner.svg";
 import Navbar from "../../components/navbar";
-import { useNavigate } from "react-router-dom";
+import { useSessionStorage } from "usehooks-ts";
+import { USER_INFO } from "../../guards/constants";
 
 export default function Recipes() {
-    const navigate = useNavigate();
+    const [userInfo] = useSessionStorage(USER_INFO, null);
     const [recipes, setRecipes] = useState([]);
     const [keyword, setKeyword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -17,16 +18,14 @@ export default function Recipes() {
         // prepare url
         // const url = new URL('https://api.spoonacular.com/recipes/complexSearch');
         const url = new URL(`${process.env.REACT_APP_RECIPE_API_URL}/recipes`);
+        url.searchParams.append('userId', userInfo?._id);
         // url.searchParams.append('apiKey', process.env.REACT_APP_SPOONACULAR_API_KEY);
         // url.searchParams.append('query', keyword);
         // fetch recipes
         const response = await fetch(url, { credentials: 'include' });
-        if (response.status === 401) {
-            navigate('/login');
-        } else {
+        if (response.status === 200) {
             const data = await response.json();
             // update the recipes state
-            // setRecipes(data.results);
             setRecipes(data);
             // console.log(data);
             setLoading(false)
@@ -35,6 +34,7 @@ export default function Recipes() {
 
     useEffect(() => {
         getRecipes()
+        // eslint-disable-next-line
     }, [keyword]);
 
     return (

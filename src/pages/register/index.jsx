@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSessionStorage } from "usehooks-ts";
 import { USER_INFO } from "../../guards/constants";
 
-export default function Login() {
+export default function Register() {
     const navigate = useNavigate();
     // eslint-disable-next-line
     const [userInfo, setUserInfo] = useSessionStorage(USER_INFO, null);
@@ -28,7 +28,7 @@ export default function Login() {
         }
     }
 
-    const login = async (event) => {
+    const register = async (event) => {
         // Set loading to true
         setLoading(true);
         // Prevent default form submit behavior
@@ -36,10 +36,11 @@ export default function Login() {
         // Get form data
         const formData = new FormData(event.target);
         // Post form data to the backend
-        const response = await fetch(`${process.env.REACT_APP_RECIPE_API_URL}/users/login`, {
-            credentials: 'include',
+        const response = await fetch(`${process.env.REACT_APP_RECIPE_API_URL}/users/register`, {
+            // credentials: 'include',
             method: 'POST',
             body: JSON.stringify({
+                fullName: formData.get('fullName'),
                 email: formData.get('email'),
                 password: formData.get('password'),
             }),
@@ -47,9 +48,9 @@ export default function Login() {
                 'Content-Type': 'application/json'
             }
         });
-        if (response.status === 200) {
-            // Get User Profile
-            await getUserProfile();
+        if (response.status === 201) {
+            // Navigate to /login if register was successful
+            navigate('/login');
         } else {
             // Set loading to false
             setLoading(false);
@@ -63,8 +64,13 @@ export default function Login() {
 
     return (
         <Container sx={{ my: '2rem' }} maxWidth="sm">
-            <h1>User Login</h1>
-            <form onSubmit={login}>
+            <h1>User Registration</h1>
+            <form onSubmit={register}>
+                <TextField
+                    sx={{ mb: '2rem' }}
+                    fullWidth
+                    name="fullName"
+                    label="Enter FullName" />
                 <TextField
                     sx={{ mb: '2rem' }}
                     fullWidth
@@ -83,12 +89,12 @@ export default function Login() {
                         type="submit"
                         size="large"
                         variant="contained">
-                        Login
+                        Register
                     </LoadingButton>
                 </Box>
             </form>
             <Box sx={{ mt: '2rem' }} textAlign="center">
-                <Typography component={Link} to="/register">New User? Register!</Typography>
+                <Typography component={Link} to="/login">Already have an Account? Login!</Typography>
             </Box>
         </Container>
     );

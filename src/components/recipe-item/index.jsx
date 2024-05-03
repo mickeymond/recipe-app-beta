@@ -9,7 +9,7 @@ export default function RecipeItem({ id, title, image }) {
                     <CardMedia
                         component="img"
                         height="140"
-                        image={`https://minio-dev.azurewebsites.net/recipe-api/images/${image}`}
+                        image={`https://play.min.io/recipe-api/images/${image}`}
                         alt={title}
                     />
                     <CardContent sx={{ height: '100%' }}>

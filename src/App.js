@@ -3,13 +3,17 @@ import Recipe from "./pages/recipe";
 import Recipes from "./pages/recipes";
 import AddRecipe from "./pages/add-recipe";
 import Login from "./pages/login";
+import AuthGuard from "./guards/AuthGuard";
+import NoAuthGuard from "./guards/NoAuthGuard";
+import Register from "./pages/register";
 
 const router = createBrowserRouter([
-  { path: "/", element: <Recipes /> },
-  { path: "/recipes", element: <Recipes /> },
-  { path: "/recipes/:id", element: <Recipe /> },
-  { path: "/add-recipe", element: <AddRecipe /> },
-  { path: "/login", element: <Login /> },
+  { path: "/", element: <AuthGuard component={<Recipes />} /> },
+  { path: "/recipes", element: <AuthGuard component={<Recipes />} /> },
+  { path: "/recipes/:id", element: <AuthGuard component={<Recipe />} /> },
+  { path: "/add-recipe", element: <AuthGuard component={<AddRecipe />} /> },
+  { path: "/login", element: <NoAuthGuard component={<Login />} /> },
+  { path: "/register", element: <NoAuthGuard component={<Register />} /> },
 ]);
 
 function App() {
